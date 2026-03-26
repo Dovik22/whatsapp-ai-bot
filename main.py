@@ -6,6 +6,7 @@ generates smart replies using Claude, and sends them back.
 
 import hashlib
 import hmac
+import logging
 
 import structlog
 from fastapi import FastAPI, Request, Response, HTTPException, Query
@@ -15,16 +16,17 @@ from conversation import add_message, get_history, save_lead, get_all_leads
 from whatsapp import send_message, mark_as_read
 from ai import generate_reply
 
+log_level = getattr(logging, settings.log_level.upper(), logging.DEBUG)
+
 structlog.configure(
     processors=[
         structlog.processors.TimeStamper(fmt="iso"),
         structlog.processors.add_log_level,
         structlog.dev.ConsoleRenderer(),
     ],
-    wrapper_class=structlog.make_filtering_bound_logger(
-        structlog.get_level_from_name(settings.log_level)
-    ),
+        wrapper_class=structlog.make_filtering_bound_logger(log_level),
 )
+    
 
 logger = structlog.get_logger()
 
