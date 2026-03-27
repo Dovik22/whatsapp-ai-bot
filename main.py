@@ -10,6 +10,7 @@ import logging
 
 import structlog
 from fastapi import FastAPI, Request, Response, HTTPException, Query
+from fastapi.responses import HTMLResponse
 
 from config import settings
 from conversation import add_message, get_history, save_lead, get_all_leads
@@ -24,9 +25,9 @@ structlog.configure(
         structlog.processors.add_log_level,
         structlog.dev.ConsoleRenderer(),
     ],
-        wrapper_class=structlog.make_filtering_bound_logger(log_level),
+    wrapper_class=structlog.make_filtering_bound_logger(log_level),
 )
-    
+ 
 
 logger = structlog.get_logger()
 
@@ -43,6 +44,54 @@ app = FastAPI(
 @app.get("/")
 async def health():
     return {"status": "ok", "bot": "Opyflow AI Workshop"}
+
+
+# ──────────────────────────────────────────────
+# Privacy Policy (required by Meta for app publishing)
+# ──────────────────────────────────────────────
+@app.get("/privacy", response_class=HTMLResponse)
+async def privacy_policy():
+    """Privacy policy page for Meta app review."""
+    return """<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy - Opyflow AI Workshop Bot</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 800px; margin: 0 auto; padding: 40px 20px; color: #1a1a2e; line-height: 1.7; }
+        h1 { color: #7C3AED; }
+        h2 { color: #4F46E5; margin-top: 2em; }
+        .updated { color: #6878A3; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+    <h1>Privacy Policy</h1>
+    <p class="updated">Last updated: March 27, 2026</p>
+    <p>This privacy policy describes how Opyflow Ltd. ("we", "us", "our") collects, uses, and protects information when you interact with our AI Procurement Workshop WhatsApp bot ("the Bot").</p>
+
+    <h2>1. Information We Collect</h2>
+    <p>When you message our Bot, we collect: your phone number, message content, and timestamps. This data is used solely to provide you with AI-powered responses about our AI Procurement Workshop and related services.</p>
+
+    <h2>2. How We Use Your Information</h2>
+    <p>We use the information to: respond to your inquiries via WhatsApp, improve our Bot responses, and identify potential leads interested in our workshop. We do not sell, rent, or share your personal information with third parties for marketing purposes.</p>
+
+    <h2>3. Data Storage and Security</h2>
+    <p>Your data is stored securely on encrypted servers. Conversation history is retained for up to 90 days to maintain context in ongoing conversations, after which it is automatically deleted.</p>
+
+    <h2>4. Third-Party Services</h2>
+    <p>Our Bot uses Meta's WhatsApp Business Platform to send and receive messages, and Anthropic's Claude AI to generate responses. These services have their own privacy policies governing data they process.</p>
+
+    <h2>5. Your Rights</h2>
+    <p>You may request deletion of your data at any time by messaging the Bot with "delete my data" or by contacting us at dov.amar@opyflow.com. You can stop interacting with the Bot at any time by simply not sending messages.</p>
+
+    <h2>6. Contact Us</h2>
+    <p>For questions about this privacy policy, contact us at:<br>
+    <strong>Opyflow Ltd.</strong><br>
+    Email: dov.amar@opyflow.com<br>
+    Website: <a href="https://www.opyflow.com">www.opyflow.com</a></p>
+</body>
+</html>"""
 
 
 # ──────────────────────────────────────────────
